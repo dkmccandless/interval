@@ -30,6 +30,11 @@ const (
 	rightEndMask Ends = 2
 )
 
+var (
+	inf    = math.Inf(1)
+	neginf = math.Inf(-1)
+)
+
 // New returns a pointer to an Interval with endpoints x and y.
 // Ends describes whether the endpoints are open or closed.
 // New panics if the interval is empty or if it contains a closed endpoint of infinite value.
@@ -38,10 +43,10 @@ func New(x, y float64, ends Ends) *Interval {
 	if in.IsEmpty() {
 		panic(fmt.Sprintf("New: %v is empty", in))
 	}
-	if in.a == math.Inf(-1) && in.LeftIsClosed() {
+	if in.a == neginf && in.LeftIsClosed() {
 		panic(fmt.Sprintf("New: %v is closed at -Inf", in))
 	}
-	if in.b == math.Inf(1) && in.RightIsClosed() {
+	if in.b == inf && in.RightIsClosed() {
 		panic(fmt.Sprintf("New: %v is closed at +Inf", in))
 	}
 	return in
