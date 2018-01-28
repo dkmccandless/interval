@@ -5,6 +5,7 @@ package interval
 
 import (
 	"fmt"
+	"math"
 )
 
 // An Interval is a subset of the extended real numbers.
@@ -31,16 +32,23 @@ const (
 
 // New returns a pointer to an Interval with endpoints x and y.
 // Ends describes whether the endpoints are open or closed.
-// New panics if x > y.
+// New panics if the interval is empty or if it contains a closed endpoint of infinite value.
 func New(x, y float64, ends Ends) *Interval {
-	if x > y {
-		panic(fmt.Sprintf("New: x (%v) > y (%v)", x, y))
+	in := &Interval{x, y, ends}
+	if in.IsEmpty() {
+		panic(fmt.Sprintf("New: %v is empty", in))
 	}
-	return &Interval{x, y, ends}
+	if in.a == math.Inf(-1) && in.LeftIsClosed() {
+		panic(fmt.Sprintf("New: %v is closed at -Inf", in))
+	}
+	if in.b == math.Inf(1) && in.RightIsClosed() {
+		panic(fmt.Sprintf("New: %v is closed at +Inf", in))
+	}
+	return in
 }
 
-// NewUnit returns a pointer to an Interval representing x.
-func NewUnit(x float64) *Interval { return &Interval{x, x, Closed} }
+// NewUnit is shorthand for New(x, x, Closed).
+func NewUnit(x float64) *Interval { return New(x, x, Closed) }
 
 // Left returns in's left endpoint.
 func (in *Interval) Left() float64 { return in.a }
