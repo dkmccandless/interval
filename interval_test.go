@@ -1,6 +1,7 @@
 package interval
 
 import (
+	"math"
 	"testing"
 )
 
@@ -108,9 +109,71 @@ func TestContains(t *testing.T) {
 		{Interval{neginf, inf, Open}, -3, true},
 		{Interval{neginf, inf, Open}, neginf, false},
 		{Interval{neginf, inf, Open}, inf, false},
+		{Interval{neginf, inf, Open}, math.NaN(), false},
 	} {
 		if got := test.in.Contains(test.x); got != test.want {
 			t.Errorf("Contains(%v, %v): got %v, want %v", test.in, test.x, got, test.want)
+		}
+	}
+}
+
+var setTests = []struct{ x, y, intersection, union *Interval }{
+	{
+		&Interval{0, 0, Closed},
+		&Interval{0, 0, Closed},
+		&Interval{0, 0, Closed},
+		&Interval{0, 0, Closed},
+	},
+	{
+		&Interval{neginf, inf, Open},
+		&Interval{neginf, inf, Open},
+		&Interval{neginf, inf, Open},
+		&Interval{neginf, inf, Open},
+	},
+	{
+		&Interval{neginf, inf, Open},
+		&Interval{0, 0, Closed},
+		&Interval{0, 0, Closed},
+		&Interval{neginf, inf, Open},
+	},
+	{
+		&Interval{neginf, inf, Open},
+		&Interval{0, 0, Open},
+		&Interval{0, 0, Open},
+		&Interval{0, 0, Open},
+	},
+	{
+		&Interval{-1, 2, Open},
+		&Interval{2, 4, Closed},
+		&Interval{0, 0, Open},
+		&Interval{-1, 4, RightClosed},
+	},
+	{
+		&Interval{-1, 2, RightClosed},
+		&Interval{2, 4, Closed},
+		&Interval{2, 2, Closed},
+		&Interval{-1, 4, RightClosed},
+	},
+	{
+		&Interval{neginf, 4, Open},
+		&Interval{-3, 12, Closed},
+		&Interval{-3, 4, LeftClosed},
+		&Interval{neginf, 12, RightClosed},
+	},
+}
+
+func TestIntersection(t *testing.T) {
+	for _, test := range setTests {
+		if got := Intersection(test.x, test.y); !Equal(got, test.intersection) {
+			t.Errorf("Intersection(%v, %v): got %v, want %v", test.x, test.y, got, test.intersection)
+		}
+	}
+}
+
+func TestUnion(t *testing.T) {
+	for _, test := range setTests {
+		if got := Union(test.x, test.y); !Equal(got, test.union) {
+			t.Errorf("Union(%v, %v): got %v, want %v", test.x, test.y, got, test.union)
 		}
 	}
 }
