@@ -1,4 +1,4 @@
-// package interval implements floating-point interval arithmetic.
+// Package interval implements floating-point interval arithmetic and set operations.
 // TODO: Handle signed zero
 // TODO: Implement outward rounding
 package interval
