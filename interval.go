@@ -105,6 +105,9 @@ func (in *Interval) RightIsClosed() bool { return in.ends&rightEndMask != 0 }
 // empty returns the empty interval (0, 0).
 func empty() *Interval { return &Interval{} }
 
+// zero returns the closed interval [0, 0].
+func zero() *Interval { return &Interval{0, 0, Closed} }
+
 // Intersection returns the intersection of x and y.
 // TODO: Handle NaN
 func Intersection(x, y *Interval) *Interval {
