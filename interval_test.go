@@ -35,7 +35,7 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func TestNewUnit(t *testing.T) {
+func TestNewSingle(t *testing.T) {
 	for _, test := range []struct {
 		x   float64
 		in  *Interval
@@ -47,8 +47,8 @@ func TestNewUnit(t *testing.T) {
 		{0, &Interval{0, 0, Closed}, nil},
 		{-3, &Interval{-3, -3, Closed}, nil},
 	} {
-		if got, err := NewUnit(test.x); !Equal(got, test.in) || err != test.err {
-			t.Errorf("NewUnit(%v): got %v, %v; want %v, %v",
+		if got, err := NewSingle(test.x); !Equal(got, test.in) || err != test.err {
+			t.Errorf("NewSingle(%v): got %v, %v; want %v, %v",
 				test.x, got, err, test.in, test.err,
 			)
 		}
@@ -56,8 +56,8 @@ func TestNewUnit(t *testing.T) {
 }
 
 var boolTests = []struct {
-	in                                                Interval
-	empty, mixed, unit, zero, leftClosed, rightClosed bool
+	in                                                  Interval
+	empty, mixed, single, zero, leftClosed, rightClosed bool
 }{
 	{Interval{0, 0, Open}, true, false, false, false, false, false},
 	{Interval{0, 0, LeftClosed}, true, false, false, false, true, false},
@@ -90,10 +90,10 @@ func TestIsMixed(t *testing.T) {
 	}
 }
 
-func TestIsUnit(t *testing.T) {
+func TestIsSingle(t *testing.T) {
 	for _, test := range boolTests {
-		if got := test.in.IsUnit(); got != test.unit {
-			t.Errorf("IsUnit(%v): got %v, want %v", test.in, got, test.unit)
+		if got := test.in.IsSingle(); got != test.single {
+			t.Errorf("IsSingle(%v): got %v, want %v", test.in, got, test.single)
 		}
 	}
 }

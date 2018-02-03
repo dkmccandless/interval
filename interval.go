@@ -66,8 +66,8 @@ func New(x, y float64, ends Ends) (*Interval, error) {
 	return in, nil
 }
 
-// NewUnit is shorthand for New(x, x, Closed).
-func NewUnit(x float64) (*Interval, error) { return New(x, x, Closed) }
+// NewSingle is shorthand for New(x, x, Closed).
+func NewSingle(x float64) (*Interval, error) { return New(x, x, Closed) }
 
 // Left returns in's left endpoint.
 func (in *Interval) Left() float64 { return in.a }
@@ -86,11 +86,12 @@ func (in *Interval) IsEmpty() bool { return in.a > in.b || in.a == in.b && in.en
 // IsMixed reports whether in contains at least one positive and one negative real number.
 func (in *Interval) IsMixed() bool { return in.a < 0 && 0 < in.b }
 
-// IsUnit reports whether in represents a single real value.
-func (in *Interval) IsUnit() bool { return in.a == in.b && in.ends == Closed }
+// IsSingle reports whether in is a degenerate interval
+// representing a single real value.
+func (in *Interval) IsSingle() bool { return in.a == in.b && in.ends == Closed }
 
-// IsZero reports whether in is the closed unit interval [0, 0].
-func (in *Interval) IsZero() bool { return in.IsUnit() && in.a == 0 }
+// IsZero reports whether in is the closed degenerate interval [0, 0].
+func (in *Interval) IsZero() bool { return in.IsSingle() && in.a == 0 }
 
 // Contains reports whether in contains x.
 func (in *Interval) Contains(x float64) bool {

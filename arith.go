@@ -9,7 +9,7 @@ import "errors"
 var ErrDisjointUnion = errors.New("union of disjoint intervals")
 
 // ErrDivByZero is returned when a non-empty interval is divided by
-// the closed unit interval [0, 0].
+// the closed degenerate interval [0, 0].
 var ErrDivByZero = errors.New("division by the zero interval")
 
 func (e Ends) flip() Ends { return e&leftEndMask<<1 + e&rightEndMask>>1 }
