@@ -5,6 +5,56 @@ import (
 	"testing"
 )
 
+func TestNew(t *testing.T) {
+	for _, test := range []struct {
+		x, y float64
+		ends Ends
+		in   *Interval
+		err  error
+	}{
+		{math.NaN(), 0, Closed, empty(), ErrNaN},
+		{0, math.NaN(), Closed, empty(), ErrNaN},
+		{0, 0, Open, empty(), ErrEmpty},
+		{0, 0, LeftClosed, empty(), ErrEmpty},
+		{0, 0, RightClosed, empty(), ErrEmpty},
+		{1, -1, Closed, empty(), ErrEmpty},
+		{inf, inf, Open, empty(), ErrEmpty},
+		{0, inf, Closed, empty(), ErrClosedInf},
+		{neginf, 0, Closed, empty(), ErrClosedInf},
+		{0, 0, Closed, &Interval{0, 0, Closed}, nil},
+		{1, 1, Closed, &Interval{1, 1, Closed}, nil},
+		{4, 6, Open, &Interval{4, 6, Open}, nil},
+		{-3, inf, LeftClosed, &Interval{-3, inf, LeftClosed}, nil},
+		{neginf, 3, RightClosed, &Interval{neginf, 3, RightClosed}, nil},
+	} {
+		if got, err := New(test.x, test.y, test.ends); !Equal(got, test.in) || err != test.err {
+			t.Errorf("New(%v, %v, %v): got %v, %v; want %v, %v",
+				test.x, test.y, test.ends, got, err, test.in, test.err,
+			)
+		}
+	}
+}
+
+func TestNewUnit(t *testing.T) {
+	for _, test := range []struct {
+		x   float64
+		in  *Interval
+		err error
+	}{
+		{math.NaN(), empty(), ErrNaN},
+		{inf, empty(), ErrClosedInf},
+		{neginf, empty(), ErrClosedInf},
+		{0, &Interval{0, 0, Closed}, nil},
+		{-3, &Interval{-3, -3, Closed}, nil},
+	} {
+		if got, err := NewUnit(test.x); !Equal(got, test.in) || err != test.err {
+			t.Errorf("NewUnit(%v): got %v, %v; want %v, %v",
+				test.x, got, err, test.in, test.err,
+			)
+		}
+	}
+}
+
 var boolTests = []struct {
 	in                                                Interval
 	empty, mixed, unit, zero, leftClosed, rightClosed bool

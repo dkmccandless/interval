@@ -3,9 +3,21 @@
 package interval
 
 import (
+	"errors"
 	"fmt"
 	"math"
 )
+
+// ErrNaN is returned when New is called with an argument that is NaN.
+var ErrNaN = errors.New("argument is NaN")
+
+// ErrEmpty is returned when New is called with arguments
+// that would result in an empty interval.
+var ErrEmpty = errors.New("empty interval")
+
+// ErrClosedInf is returned when New is called with arguments
+// that would create a closed left or right endpoint at -inf or +inf.
+var ErrClosedInf = errors.New("closed endpoint of infinite value")
 
 // An Interval is a subset of the real numbers.
 // The Interval type's zero value corresponds to the empty interval (0, 0).
@@ -37,27 +49,25 @@ var (
 // New returns a pointer to an Interval with endpoints x and y,
 // which may be positive or negative infinity.
 // Ends describes whether the endpoints are open or closed.
-// New panics if x or y is NaN or if the interval is empty
+// New returns an empty interval and a non-nil error
+// if x or y is NaN or if the interval is empty
 // or contains a closed endpoint of infinite value.
-func New(x, y float64, ends Ends) *Interval {
+func New(x, y float64, ends Ends) (*Interval, error) {
 	if math.IsNaN(x) || math.IsNaN(y) {
-		panic("New: argument is NaN")
+		return empty(), ErrNaN
 	}
 	in := &Interval{x, y, ends}
 	if in.IsEmpty() {
-		panic(fmt.Sprintf("New: %v is empty", in))
+		return empty(), ErrEmpty
 	}
-	if in.a == neginf && in.LeftIsClosed() {
-		panic(fmt.Sprintf("New: %v is closed at -Inf", in))
+	if in.a == neginf && in.LeftIsClosed() || in.b == inf && in.RightIsClosed() {
+		return empty(), ErrClosedInf
 	}
-	if in.b == inf && in.RightIsClosed() {
-		panic(fmt.Sprintf("New: %v is closed at +Inf", in))
-	}
-	return in
+	return in, nil
 }
 
 // NewUnit is shorthand for New(x, x, Closed).
-func NewUnit(x float64) *Interval { return New(x, x, Closed) }
+func NewUnit(x float64) (*Interval, error) { return New(x, x, Closed) }
 
 // Left returns in's left endpoint.
 func (in *Interval) Left() float64 { return in.a }
@@ -69,6 +79,8 @@ func (in *Interval) Right() float64 { return in.b }
 func (in *Interval) Ends() Ends { return in.ends }
 
 // IsEmpty reports whether in is an empty interval.
+// An interval with endpoints x and y is empty if x > y
+// or if x == y and either endpoint is open.
 func (in *Interval) IsEmpty() bool { return in.a > in.b || in.a == in.b && in.ends != Closed }
 
 // IsMixed reports whether in contains at least one positive and one negative real number.
