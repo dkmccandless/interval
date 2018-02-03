@@ -1,5 +1,4 @@
 // Package interval implements floating-point interval arithmetic and set operations.
-// TODO: Handle signed zero
 // TODO: Implement outward rounding
 package interval
 
@@ -8,7 +7,7 @@ import (
 	"math"
 )
 
-// An Interval is a subset of the extended real numbers.
+// An Interval is a subset of the real numbers.
 // The Interval type's zero value corresponds to the empty interval (0, 0).
 type Interval struct {
 	a, b float64
@@ -35,7 +34,8 @@ var (
 	neginf = math.Inf(-1)
 )
 
-// New returns a pointer to an Interval with endpoints x and y.
+// New returns a pointer to an Interval with endpoints x and y,
+// which may be positive or negative infinity.
 // Ends describes whether the endpoints are open or closed.
 // New panics if x or y is NaN or if the interval is empty
 // or contains a closed endpoint of infinite value.
