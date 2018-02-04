@@ -1,5 +1,3 @@
-// Package interval implements floating-point interval arithmetic and set operations.
-// TODO: Implement outward rounding
 package interval
 
 import (
@@ -122,7 +120,6 @@ func empty() *Interval { return &Interval{} }
 func zero() *Interval { return &Interval{0, 0, Closed} }
 
 // Intersection returns the intersection of x and y.
-// TODO: Handle NaN
 func Intersection(x, y *Interval) *Interval {
 	if x.IsEmpty() || y.IsEmpty() {
 		return empty()
@@ -155,7 +152,6 @@ func Intersection(x, y *Interval) *Interval {
 
 // Union returns the union of x and y if their intersection is non-empty,
 // or else the empty interval.
-// TODO: Handle NaN
 func Union(x, y *Interval) *Interval {
 	if x.IsEmpty() || y.IsEmpty() {
 		return empty()

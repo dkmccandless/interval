@@ -35,7 +35,9 @@ func (in *Interval) Neg() *Interval {
 }
 
 // Add returns the sum x+y.
-// TODO: Handle outward rounding
+//
+// Special case is:
+//	Add(x, y) = empty if x or y is empty
 func Add(x, y *Interval) *Interval {
 	if x.IsEmpty() || y.IsEmpty() {
 		return empty()
@@ -44,7 +46,9 @@ func Add(x, y *Interval) *Interval {
 }
 
 // Sub returns the difference x-y.
-// TODO: Handle outward rounding
+//
+// Special case is:
+//	Sub(x, y) = empty if x or y is empty
 func Sub(x, y *Interval) *Interval {
 	if x.IsEmpty() || y.IsEmpty() {
 		return empty()
@@ -53,7 +57,9 @@ func Sub(x, y *Interval) *Interval {
 }
 
 // Mul returns the product x*y.
-// TODO: Handle outward rounding
+//
+// Special case is:
+//	Mul(x, y) = empty if x or y is empty
 func Mul(x, y *Interval) *Interval {
 	switch {
 	case x.IsEmpty() || y.IsEmpty():
