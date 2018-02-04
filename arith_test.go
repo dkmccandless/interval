@@ -32,6 +32,9 @@ var (
 	inm  = &Interval{-2, 4, Closed}
 	inn0 = &Interval{-0.25, 0, Closed}
 	inn1 = &Interval{-8, -4, Closed}
+	inpi = &Interval{1, inf, LeftClosed}
+	inni = &Interval{neginf, -1, RightClosed}
+	inr  = &Interval{neginf, inf, Open}
 )
 
 var arithTests = []struct {
@@ -42,6 +45,8 @@ var arithTests = []struct {
 	{inp1, ine, ine, ine, ine, ine, nil},
 	{inp1, inz, inp1, inp1, inz, ine, ErrDivByZero},
 	{inz, inp1, inp1, inp1.Neg(), inz, inz, nil},
+	{inz, inr, inr, inr, inz, inz, nil},
+	{inp0, inr, inr, inr, inr, inr, nil},
 	{
 		inp0, inp1,
 		&Interval{1, 2.5, Closed},
@@ -57,11 +62,18 @@ var arithTests = []struct {
 		&Interval{2, inf, LeftClosed}, nil,
 	},
 	{
+		inp0, inp0,
+		&Interval{0, 1, Closed},
+		&Interval{-0.5, 0.5, Closed},
+		&Interval{0, 0.25, Closed},
+		&Interval{0, inf, LeftClosed}, nil,
+	},
+	{
 		inp1, inm,
 		&Interval{-1, 6, Closed},
 		&Interval{-3, 4, Closed},
 		&Interval{-4, 8, Closed},
-		&Interval{-inf, inf, Open}, ErrDisjointUnion,
+		inr, ErrDisjointUnion,
 	},
 	{
 		inp1, inn0,
@@ -89,21 +101,21 @@ var arithTests = []struct {
 		&Interval{-2, 4.5, Closed},
 		&Interval{-2.5, 4, Closed},
 		&Interval{-1, 2, Closed},
-		&Interval{neginf, inf, Open}, nil,
+		inr, nil,
 	},
 	{
 		inm, inm,
 		&Interval{-4, 8, Closed},
 		&Interval{-6, 6, Closed},
 		&Interval{-8, 16, Closed},
-		&Interval{neginf, inf, Open}, nil,
+		inr, nil,
 	},
 	{
 		inm, inn0,
 		&Interval{-2.25, 4, Closed},
 		&Interval{-2, 4.25, Closed},
 		&Interval{-1, 0.5, Closed},
-		&Interval{neginf, inf, Open}, nil,
+		inr, nil,
 	},
 	{
 		inm, inn1,
@@ -131,7 +143,7 @@ var arithTests = []struct {
 		&Interval{-10, 0, Closed},
 		&Interval{-12, -2, Closed},
 		&Interval{-32, 16, Closed},
-		&Interval{neginf, inf, Open}, ErrDisjointUnion,
+		inr, ErrDisjointUnion,
 	},
 	{
 		inn1, inn0,
@@ -146,6 +158,27 @@ var arithTests = []struct {
 		&Interval{3.75, 8, Closed},
 		&Interval{0, 2, Closed},
 		&Interval{0, 0.0625, Closed}, nil,
+	},
+	{
+		inp1, inpi,
+		&Interval{2, inf, LeftClosed},
+		&Interval{neginf, 1, RightClosed},
+		inpi,
+		&Interval{0, 2, RightClosed}, nil,
+	},
+	{
+		inp1, inni,
+		&Interval{neginf, 1, RightClosed},
+		&Interval{2, inf, LeftClosed},
+		&Interval{neginf, -1, RightClosed},
+		&Interval{-2, 0, LeftClosed}, nil,
+	},
+	{
+		inpi, inni,
+		inr,
+		&Interval{2, inf, LeftClosed},
+		inni,
+		&Interval{neginf, 0, Open}, nil,
 	},
 }
 
