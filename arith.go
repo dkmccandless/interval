@@ -103,9 +103,9 @@ func Mul(x, y *Interval) *Interval {
 // close to zero, and Div returns (-inf, 0], [0, +inf), or (-inf, +inf) according to
 // the signs present in x and y, with a nil error.
 // If y contains 0 and x does not, then their quotient is a union of two disjoint
-// intervals with endpoints -inf, x.a/y.a and x.a/y.b, +inf. In this case,
-// Div returns (-inf, +inf) and ErrDisjointUnion to signal the loss of information
-// in the return value.
+// intervals with endpoints -inf, x.left/y.left and x.left/y.right, +inf (for x>0,
+// respectively x.right for x<0). In this case, Div returns (-inf, +inf) and
+// ErrDisjointUnion to signal the loss of information in the return value.
 //
 // Other special cases are:
 //	Div(empty, y) = Div(x, empty) = empty, nil
